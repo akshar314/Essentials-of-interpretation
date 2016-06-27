@@ -34,20 +34,25 @@
  */
 function evaluate(exp) {
 
-  // if it's a number, eval a number
-  if (isNumber(exp))
-    return evaluateNumber(exp);
+    // if it's a number, eval a number
+    if (isNumber(exp))
+        return evaluateNumber(exp);
 
-  // if it's addition, eval the addition
-  if (isAddition(exp))
-    return evaluateAddition(exp);
+    // if it's addition, eval the addition
+    if (isAddition(exp))
+        return evaluateAddition(exp);
 
-  // if it's a subtraction, eval the subtraction
-  if (isSubtraction(exp))
-    return evaluateSubtraction(exp);
+    // if it's a subtraction, eval the subtraction
+    if (isSubtraction(exp))
+        return evaluateSubtraction(exp);
 
-  // etc., that is, quite simple "switch-case"
-  // anaylisis of the expression type
+    if (isMultiplication(exp))
+        return evaluateMultiplication(exp);
+
+    if (isDivison(exp))
+        return evaluateDivison(exp);
+
+
 
 }
 
@@ -56,8 +61,16 @@ function evaluate(exp) {
  * @param {Expression} exp
  * Tests whether an expression is a number
  */
+function isDivison(exp) {
+    return isTaggedList("\\", exp);
+}
+
+function isMultiplication(exp) {
+    return isTaggedList("*", exp);
+}
+
 function isNumber(exp) {
-  return !isNaN(+exp);
+    return !isNaN(+exp);
 }
 
 /**
@@ -66,7 +79,7 @@ function isNumber(exp) {
  * Tests whether an expression is a addition
  */
 function isAddition(exp) {
-  return isTaggedList("+", exp);
+    return isTaggedList("+", exp);
 }
 
 /**
@@ -75,86 +88,44 @@ function isAddition(exp) {
  * Tests whether an expression is a subtraction
  */
 function isSubtraction(exp) {
-  return isTaggedList("-", exp);
+    return isTaggedList("-", exp);
 }
 
-/**
- * isTaggedList
- * @param {Expression} exp
- *
- * Main expression type testing function; used by
- * isAddition and isSubtraction testers.
- *
- * We represent programs as arrays (lists), which
- * are close to abstract syntax trees (AST) in
- * this case. Every complex expression has a type,
- * which is the first element of the expression "array".
- *
- * Example:
- *
- * Expression ["+", A, B] is the "addition" since
- * its first element (the "tag") is "+"
- *
- */
+
 function isTaggedList(tag, exp) {
-  return exp[0] == tag;
+    return exp[0] == tag;
 }
 
-/**
- * evaluateNumber
- * @param {Expression} exp
- * Numbers are the simplest expressions in
- * this interpreter (also known as, "self-evaluating"
- * expressions), so just return the number
- * representation in JS.
- */
+
 function evaluateNumber(exp) {
-  return +exp;
+    return +exp;
 }
 
-/**
- * evaluateAddition
- * @param {Expression} exp
- * For addition we recursively evaluate
- * left-hand side (LHS), i.e. exp[1] and
- * right-hand side (RHS), i.e. exp[2].
- *
- * E.g.:
- *
- * ["+", "1", "2"]
- *
- * Recursion with evaluate(...) is needed to handle
- * nested expressions, e.g.:
- *
- * ["+", ["+", "1", "5"], "2"]
- */
+
 function evaluateAddition(exp) {
-  return evaluate(exp[1]) + evaluate(exp[2]);
+    return evaluate(exp[1]) + evaluate(exp[2]);
 }
 
-/**
- * evaluateSubtraction
- * @param {Expression} exp
- * The behavior of evaluting subtraction is
- * the same as eval'ing addition, see: evaluateAddition
- */
+
 function evaluateSubtraction(exp) {
-  return evaluate(exp[1]) - evaluate(exp[2]);
+    return evaluate(exp[1]) - evaluate(exp[2]);
 }
 
-// we represent program in "parenthesized prefix"
-// form, that is: (operator operands)
+function evaluateMultiplication(exp) {
+    return evaluate(exp[1]) * evaluate(exp[2]);
+}
+
+function evaluateDivison(exp) {
+    return evaluate(exp[1]) / evaluate(exp[2]);
+}
+
+
 
 // the simplest addition
-var program = ["+", "1", "3"];
+var program = ["*", ["*", "2", "3"], "3"];
 var result = evaluate(program);
-console.log("result:", result); // 4
+console.log("result:", result);
 
-// more complex addition
-program = ["+", ["+", "1", "4"], ["-", "7", "2"]];
-result = evaluate(program);
-
-console.log("result:", result); // 10
 
 // Exercises:
 //
